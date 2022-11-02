@@ -1,0 +1,22 @@
+{
+  "name": "grubgift-server",
+  "version": "1.0.0",
+  "description": "GrubGift is a community-driven social media platform designed to facilitate the sharing of excess food with those in need. This serves as the backend server for the GrubGift website, managing user interactions, food sharing locations, and event details. This server ensures a seamless connection between donors and recipients, supports food waste reduction, and fosters community engagement by making it easier for everyone to share and find free meals. Join us in our mission to connect, share, and reduce waste one meal at a time.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon server.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2"
+  },
+  "contributors": [
+    "Abdul Haseeb Hussain Mohammed",
+    "Bobby Doshi",
+    "Satvik Khetan",
+    "Sristika Bora"
+  ]
+}
