@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
+const {markAsLiked} = require("./likeControllers");
 const userPosted = new Set();
 
 const createPost = async (req, res) => {
@@ -38,7 +39,7 @@ const updatePost = async (req, res) => {
     const post = await Post.findById(postId);
 
     if (post) {
-      if (post.poster.toString() !== userId && !isAdmin) {
+      if (post.poster !== userId && !isAdmin) {
         throw new Error("Permission denied to update the post");
       }
       post.content = content;
@@ -61,12 +62,13 @@ const deletePost = async (req, res) => {
     const postId = req.params.id;
     const post = await Post.findById(postId);
 
+    // If the post does not exists in the first place
     if (post) {
-      if (post.poster.toString() !== userId && !isAdmin) {
+      if (post.poster !== userId && !isAdmin) {
         throw new Error("Permission denied to delete the post");
       }
       await post.remove();
-      return res.json({ message: "Post deleted successfully" });
+      return res.json(post);
     } else {
       throw new Error("Post does not exist");
     }
@@ -82,14 +84,19 @@ const getSinglePost = async (req, res) => {
   try {
     const postId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(postId)) {
-      throw new Error("Invalid post ID");
+      throw new Error("Post does not exist");
     }
 
     const post = await Post.findById(postId)
         .populate("poster", "-password")
         .lean();
 
+    // If the post does not exist in the first place
     if (post) {
+      const {userId} = req.body;
+      if (userId) {
+        await markAsLiked([post], userId);
+      }
       return res.json(post);
     } else {
       throw new Error("Post does not exist");
@@ -103,7 +110,8 @@ const getSinglePost = async (req, res) => {
 
 const getMultiplePosts = async (req, res) => {
   try {
-    let { sortBy, author, search } = req.query;
+    const { userId } = req.body;
+    let {sortBy, author, search, liked } = req.query;
     if (!sortBy) sortBy = "-createdAt";
 
     let posts = await Post.find()
@@ -113,15 +121,19 @@ const getMultiplePosts = async (req, res) => {
 
     // Filtering posts based on search
     if (search) {
-      posts = posts.filter(post => post.title.toLowerCase().includes(search.toLowerCase()));
+      posts = posts.filter((post) => post.title.toLowerCase().includes(search.toLowerCase()));
     }
 
     // Filtering posts based on the author
     if (author) {
-      posts = posts.filter(post => post.poster.username === author);
+      posts = posts.filter((post) => post.poster.username === author);
     }
 
-    return res.json({ data: posts });
+    if (userId) {
+      await markAsLiked(posts, userId);
+    }
+    return res.json({ data: posts});
+
   }
   catch (err) {
     return res.status(400).json({ error: err.message });
