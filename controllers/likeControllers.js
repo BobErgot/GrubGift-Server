@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const PostLike = require("../models/PostLike");
+const paginate = require("../util/paginate");
 
 const likePost = async (req, res) => {
     try {
@@ -12,9 +13,9 @@ const likePost = async (req, res) => {
             const isPostAlreadyLiked = await PostLike.findOne({postId, userId});
             if (!isPostAlreadyLiked) {
                 await PostLike.create({
-                    postId,
-                    userId,
-                });
+                                          postId,
+                                          userId,
+                                      });
                 post.likeCount = (await PostLike.find({postId})).length;
                 await post.save();
                 return res.json({success: true});
@@ -78,6 +79,7 @@ const getUserLikedPosts = async (req, res) => {
     try {
         let { page, sortBy } = req.query;
         if (!sortBy) sortBy = "-createdAt";
+        if (!page) page = 1;
 
         const { userId } = req.body;
         const likerId = req.params.id;
@@ -86,6 +88,8 @@ const getUserLikedPosts = async (req, res) => {
             .sort(sortBy)
             .populate({ path: "postId", populate: { path: "poster" } })
             .lean();
+
+        posts = paginate(posts, 10, page);
 
         const numberOfPosts = posts.length;
         let responsePosts = [];

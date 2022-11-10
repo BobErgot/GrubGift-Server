@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
+const paginate = require("../util/paginate");
 const {markAsLiked} = require("./likeControllers");
 const userPosted = new Set();
 
@@ -111,8 +112,9 @@ const getSinglePost = async (req, res) => {
 const getMultiplePosts = async (req, res) => {
   try {
     const { userId } = req.body;
-    let {sortBy, author, search, liked } = req.query;
+    let { page, sortBy, author, search, liked } = req.query;
     if (!sortBy) sortBy = "-createdAt";
+    if (!page) page = 1;
 
     let posts = await Post.find()
         .populate("poster", "-password")
@@ -129,10 +131,12 @@ const getMultiplePosts = async (req, res) => {
       posts = posts.filter((post) => post.poster.username === author);
     }
 
+    const numberOfPosts = posts.length;
+    posts = paginate(posts, 10, page);
     if (userId) {
       await markAsLiked(posts, userId);
     }
-    return res.json({ data: posts});
+    return res.json({ data: posts, numberOfPosts });
 
   }
   catch (err) {

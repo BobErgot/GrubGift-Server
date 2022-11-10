@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const PostLike = require("./PostLike");
 
 const PostSchema = new mongoose.Schema(
     {
@@ -36,5 +37,10 @@ const PostSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+PostSchema.pre("remove", async function (next) {
+    await PostLike.deleteMany({ postId: this._id });
+    next();
+});
 
 module.exports = mongoose.model("post", PostSchema);
