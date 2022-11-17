@@ -69,6 +69,7 @@ const deletePost = async (req, res) => {
         throw new Error("Permission denied to delete the post");
       }
       await post.remove();
+//      await Comment.deleteMany({post: post._id}); //TODO
       return res.json(post);
     } else {
       throw new Error("Post does not exist");

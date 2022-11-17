@@ -5,7 +5,21 @@ const getUser = async (req, res) => {
     const username = req.params.username;
     const user = await User.findOne({ username }).select("-password");
     if (user) {
-      const data = { user };
+      const posts = await Post.find({poster: user._id})
+          .populate("poster")
+          .sort("-createdAt");
+      let likeCount = 0;
+      posts.forEach((post) => {
+        likeCount += post.likeCount;
+      });
+      const data = {
+        user,
+        posts: {
+          count: posts.length,
+          likeCount,
+          data: posts,
+        },
+      };
       return res.status(200).json(data);
     } else {
       throw new Error("User does not exist");
