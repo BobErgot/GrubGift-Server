@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Post = require("./Post");
+const filter = require("../util/filter");
 
 const CommentSchema = new mongoose.Schema(
     {
@@ -41,6 +42,14 @@ CommentSchema.post("remove", async function (res, next) {
     for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
         await comment.remove();
+    }
+
+    next();
+});
+
+CommentSchema.pre("save", function (next) {
+    if (this.content.length > 0) {
+        this.content = filter.clean(this.content);
     }
 
     next();
