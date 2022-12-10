@@ -4,6 +4,12 @@ const User = require("../models/User");
 const Chat = require("../models/Conversation");
 const Message = require("../models/Message");
 
+/**
+ * Retrieves messages from a specific chat.
+ *
+ * @param {Object} req - The request object containing the chat ID.
+ * @param {Object} res - The response object used to return the fetched messages or an error.
+ */
 const getMessages = async (req, res) => {
   try {
     const chatId = req.params.id;
@@ -26,6 +32,15 @@ const getMessages = async (req, res) => {
   }
 };
 
+/**
+ * Sends a message to a specified recipient.
+ *
+ * Creates a new chat if it doesn't exist between the sender and recipient.
+ * Adds the message to the conversation and updates the last message timestamp.
+ *
+ * @param {Object} req - The request object containing message content and user information.
+ * @param {Object} res - The response object used to confirm message sending or report an error.
+ */
 const sendMessage = async (req, res) => {
   try {
     const { content, userId } = req.body;
@@ -35,15 +50,15 @@ const sendMessage = async (req, res) => {
 
     if (recipient) {
       let chat = await Chat.findOne({
-        recipients: {
-          $all: [userId, recipientId],
-        },
-      });
+                                      recipients: {
+                                        $all: [userId, recipientId],
+                                      },
+                                    });
 
       if (!chat) {
         chat = await Chat.create({
-          recipients: [userId, recipientId],
-        });
+                                   recipients: [userId, recipientId],
+                                 });
       }
 
       chat.lastMessageAt = Date.now();
@@ -60,17 +75,26 @@ const sendMessage = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves chat conversations for a user.
+ *
+ * Finds all chats that involve the user, populates recipient details,
+ * and returns the chat information excluding passwords.
+ *
+ * @param {Object} req - The request object containing the user ID.
+ * @param {Object} res - The response object used to return the chat conversations or an error.
+ */
 const getChats = async (req, res) => {
   try {
     const { userId } = req.body;
     const chats = await Chat.find({
-      recipients: {
-        $in: [userId],
-      },
-    })
-      .populate("recipients", "-password")
-      .sort("-updatedAt")
-      .lean();
+                                    recipients: {
+                                      $in: [userId],
+                                    },
+                                  })
+        .populate("recipients", "-password")
+        .sort("-updatedAt")
+        .lean();
 
     for (let i = 0; i < chats.length; i++) {
       const chat = chats[i];

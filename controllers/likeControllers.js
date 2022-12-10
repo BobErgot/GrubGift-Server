@@ -2,6 +2,14 @@ const Post = require("../models/Post");
 const PostLike = require("../models/PostLike");
 const paginate = require("../util/paginate");
 
+/**
+ * Likes a post for a user.
+ * Validates if the post exists and checks if the user has already liked the post.
+ * If not, it creates a like entry and increments the post's like count.
+ *
+ * @param {Object} req The request object containing user and post information.
+ * @param {Object} res The response object used to return the operation status.
+ */
 const likePost = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -31,6 +39,14 @@ const likePost = async (req, res) => {
     }
 };
 
+/**
+ * Unlikes a post for a user.
+ * Validates if the post exists and checks if the user has previously liked the post.
+ * If so, it removes the like entry and decrements the post's like count.
+ *
+ * @param {Object} req The request object containing user and post information.
+ * @param {Object} res The response object used to return the operation status.
+ */
 const unlikePost = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -57,6 +73,13 @@ const unlikePost = async (req, res) => {
     }
 };
 
+/**
+ * Marks posts as liked by a specific user.
+ * Iterates over a list of posts and marks them as liked if the user has liked them.
+ *
+ * @param {Array} posts The posts to be marked as liked.
+ * @param {String} userId The ID of the user to check for likes.
+ */
 const markAsLiked = async (posts, userId) => {
     let findId = {};
     if (userId){
@@ -75,6 +98,14 @@ const markAsLiked = async (posts, userId) => {
     });
 };
 
+/**
+ * Fetches posts liked by a specific user.
+ * Utilizes pagination to manage the volume of posts returned.
+ * Optionally marks each post as liked if viewed by the liker.
+ *
+ * @param {Object} req The request object containing pagination and user information.
+ * @param {Object} res The response object used to return liked posts and count.
+ */
 const getUserLikedPosts = async (req, res) => {
     try {
         let { page, sortBy } = req.query;

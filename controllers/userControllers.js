@@ -2,6 +2,12 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const Follow = require("../models/Follow");
 
+/**
+ * Retrieves a user's profile, including their posts and aggregate like counts.
+ *
+ * @param {Object} req The request object, including the username in the params.
+ * @param {Object} res The response object used to return the user profile data.
+ */
 const getUser = async (req, res) => {
   try {
     const username = req.params.username;
@@ -32,6 +38,12 @@ const getUser = async (req, res) => {
   }
 };
 
+/**
+ * Fetches a random selection of users from the database.
+ *
+ * @param {Object} req The request object, optionally including the desired number of random users in the query.
+ * @param {Object} res The response object used to return an array of random users.
+ */
 const getRandomUsers = async (req, res) => {
   try {
     let { size } = req.query;
@@ -53,6 +65,12 @@ const getRandomUsers = async (req, res) => {
   }
 };
 
+/**
+ * Creates a follow relationship between the current user and another user.
+ *
+ * @param {Object} req The request object, including the follower's and followee's IDs.
+ * @param {Object} res The response object used to confirm the follow action.
+ */
 const followUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -71,6 +89,12 @@ const followUser = async (req, res) => {
   }
 };
 
+/**
+ * Removes a follow relationship between the current user and another user.
+ *
+ * @param {Object} req The request object, including the follower's and followee's IDs.
+ * @param {Object} res The response object used to confirm the unfollow action.
+ */
 const unfollowUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -89,6 +113,12 @@ const unfollowUser = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves all followers of a specific user.
+ *
+ * @param {Object} req The request object, including the user ID in the params.
+ * @param {Object} res The response object used to return a list of followers.
+ */
 const getFollowersOfUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -100,6 +130,12 @@ const getFollowersOfUser = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves all users that a specific user is following.
+ *
+ * @param {Object} req The request object, including the user ID in the params.
+ * @param {Object} res The response object used to return a list of followed users.
+ */
 const getFollowingOfUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -111,6 +147,12 @@ const getFollowingOfUser = async (req, res) => {
   }
 };
 
+/**
+ * Updates user information for the given user ID.
+ *
+ * @param {Object} req The request object, including user ID and new information in the body.
+ * @param {Object} res The response object used to confirm the update action.
+ */
 const updateUser = async (req, res) => {
   try {
     const { userId, biography } = req.body;
@@ -130,6 +172,13 @@ const updateUser = async (req, res) => {
   }
 };
 
+/**
+ * Utility function to generate a list of unique random numbers within a specific range.
+ *
+ * @param {Number} size The desired number of unique random numbers.
+ * @param {Number} sourceSize The upper limit for the random number generation.
+ * @returns {Array} An array of unique random numbers.
+ */
 const getRandomSizes = (size, sourceSize) => {
   const randomSizes = [];
   while (randomSizes.length < size) {

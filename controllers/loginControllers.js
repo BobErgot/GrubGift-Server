@@ -2,6 +2,13 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
+/**
+ * Constructs a user dictionary to be returned upon successful authentication.
+ *
+ * @param {String} token JWT token for the authenticated session.
+ * @param {Object} user User object from the database.
+ * @returns {Object} A dictionary containing user information and session token.
+ */
 const getUserDict = (token, user) => {
     return {
         token,
@@ -11,6 +18,12 @@ const getUserDict = (token, user) => {
     };
 };
 
+/**
+ * Builds a token payload with essential user information.
+ *
+ * @param {Object} user User object from the database.
+ * @returns {Object} A payload containing user ID and admin status.
+ */
 const buildToken = (user) => {
     return {
         userId: user._id,
@@ -18,6 +31,14 @@ const buildToken = (user) => {
     };
 };
 
+/**
+ * Registers a new user with the provided username, email, and password.
+ * Checks for existing users with the same email or username to avoid duplicates.
+ * Hashes the password before storing it in the database.
+ *
+ * @param {Object} req The request object containing user registration data.
+ * @param {Object} res The response object used to return the newly created user info or an error.
+ */
 const register = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
@@ -26,20 +47,20 @@ const register = async (req, res) => {
             const convertedEmail = email.toLowerCase();
             const hashedPassword = await bcrypt.hash(password, 10);
             const existingUser = await User.findOne({
-                $or: [{email: convertedEmail}, {username}],
-            });
+                                                        $or: [{email: convertedEmail}, {username}],
+                                                    });
             let isAdminCheck = false;
             if (role === 'Moderator') {
                 isAdminCheck = true
             }
             if (!existingUser) {
                 const newUser = await User.create({
-                    username,
-                    email: convertedEmail,
-                    password: hashedPassword,
-                    role: role,
-                    isAdmin: isAdminCheck
-                });
+                                                      username,
+                                                      email: convertedEmail,
+                                                      password: hashedPassword,
+                                                      role: role,
+                                                      isAdmin: isAdminCheck
+                                                  });
                 const token = jwt.sign(buildToken(newUser), process.env.TOKEN_KEY);
                 return res.json(getUserDict(token, newUser));
             } else {
@@ -54,6 +75,14 @@ const register = async (req, res) => {
     }
 };
 
+/**
+ * Authenticates a user with the provided email and password.
+ * Compares the given password with the hashed password stored in the database.
+ * Returns a JWT token upon successful authentication.
+ *
+ * @param {Object} req The request object containing user login credentials.
+ * @param {Object} res The response object used to return the authentication token or an error.
+ */
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;

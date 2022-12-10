@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+/**
+ * Schema definition for a follow relationship.
+ * Represents the following relationship between two users.
+ *
+ * @schema FollowSchema
+ * @type {mongoose.Schema}
+ * @property {ObjectId} userId - The ID of the user who is following.
+ * @property {ObjectId} followingId - The ID of the user being followed.
+ */
 const FollowSchema = new mongoose.Schema(
     {
         userId: {

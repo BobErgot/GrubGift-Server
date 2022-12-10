@@ -5,6 +5,16 @@ const Comment = require("../models/Comment");
 
 const usersCommented = new Set();
 
+/**
+ * Creates and posts a new comment to a specific post.
+ * Prevents users from commenting too frequently by utilizing a Set to track commenting activity.
+ *
+ * @async
+ * @function putComment
+ * @param {Object} req - The request object, containing the body with content, parentId, userId, and the post's id in params.
+ * @param {Object} res - The response object used to return the created comment or an error message.
+ * @returns {Promise<Object>} The created comment object or an error object.
+ */
 const putComment = async (req, res) => {
   try {
     const { content, parentId, userId } = req.body;
@@ -25,11 +35,11 @@ const putComment = async (req, res) => {
         usersCommented.delete(userId);}, 25000);
 
       const comment = await Comment.create({
-        content,
-        parent: parentId,
-        post: postId,
-        commenter: userId,
-      });
+                                             content,
+                                             parent: parentId,
+                                             post: postId,
+                                             commenter: userId,
+                                           });
 
       post.commentCount += 1;
 
@@ -47,6 +57,15 @@ const putComment = async (req, res) => {
   }
 };
 
+/**
+ * Deletes a specific comment based on the comment's ID and the user's authentication.
+ *
+ * @async
+ * @function deleteComment
+ * @param {Object} req - The request object, containing the body with userId, isAdmin, and the comment's id in params.
+ * @param {Object} res - The response object used to return the deleted comment or an error message.
+ * @returns {Promise<Object>} The deleted comment object or an error object.
+ */
 const deleteComment = async (req, res) => {
   try {
     const { userId, isAdmin } = req.body;
@@ -54,7 +73,7 @@ const deleteComment = async (req, res) => {
     const comment = await Comment.findById(commentId);
 
     if (comment) {
-      if (comment.commenter !== userId && !isAdmin) {
+      if (comment.commenter != userId && !isAdmin) {
         throw new Error("Permission denied for deleting the comment");
       }
 
@@ -73,6 +92,15 @@ const deleteComment = async (req, res) => {
   }
 };
 
+/**
+ * Updates the content of an existing comment based on the comment's ID and the user's authentication.
+ *
+ * @async
+ * @function updateComment
+ * @param {Object} req - The request object, containing the body with userId, content, isAdmin, and the comment's id in params.
+ * @param {Object} res - The response object used to return the updated comment or an error message.
+ * @returns {Promise<Object>} The updated comment object or an error object.
+ */
 const updateComment = async (req, res) => {
   try {
     const { userId, content, isAdmin } = req.body;
@@ -85,7 +113,7 @@ const updateComment = async (req, res) => {
 
     // Comment is present
     if (comment) {
-      if (comment.commenter !== userId && !isAdmin) {
+      if (comment.commenter != userId && !isAdmin) {
         throw new Error("Permission denied for updating the comment");
       }
 
@@ -103,6 +131,15 @@ const updateComment = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves all comments made by a specific user, optionally sorted by creation date.
+ *
+ * @async
+ * @function getCommentsOfUser
+ * @param {Object} req - The request object, containing the params with userId and optional query parameters for pagination and sorting.
+ * @param {Object} res - The response object used to return the comments or an error message.
+ * @returns {Promise<Object[]>} An array of comment objects or an error object.
+ */
 const getCommentsOfUser = async (req, res) => {
   try {
     let { page, sortBy } = req.query;
@@ -124,13 +161,22 @@ const getCommentsOfUser = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves all comments for a specific post, structured in a parent-child hierarchy.
+ *
+ * @async
+ * @function getCommentsOfPost
+ * @param {Object} req - The request object, containing the params with the post's id.
+ * @param {Object} res - The response object used to return the hierarchical comments or an error message.
+ * @returns {Promise<Object[]>} A hierarchical array of comment objects or an error object.
+ */
 const getCommentsOfPost = async (req, res) => {
   try {
 
     const postId = req.params.id;
     const comments = await Comment.find({ post: postId })
-      .populate("commenter", "-password")
-      .sort("-createdAt");
+        .populate("commenter", "-password")
+        .sort("-createdAt");
 
     let parentCommentSet = {};
     // Creating map of comments and its parents
