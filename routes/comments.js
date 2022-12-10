@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const commentControllerActions = require("../controllers/commentControllers");
-const { verifyToken: verifyUserToken } = require("../middleware/auth");
+const {verifyToken: verifyUserToken} = require("../middleware/auth");
 
 /**
  * Updates an existing comment by its ID. Requires user authentication.

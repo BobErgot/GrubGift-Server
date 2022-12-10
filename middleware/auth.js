@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 /**
  * Middleware to verify the presence and validity of an authentication token.
  *
- * This function checks for an "x-access-token" in the request headers, decodes it,
- * and appends the decoded `userId` and `isAdmin` properties to the request body.
+ * This function checks for an "x-access-token" in the request headers, decodes it, and appends
+ * the decoded `userId` and `isAdmin` properties to the request body.
  * If the token is missing or invalid, it responds with an error.
  *
  * @param {Object} req The request object, containing headers and body.
@@ -12,25 +12,23 @@ const jwt = require("jsonwebtoken");
  * @param {Function} next The callback to pass control to the next middleware.
  */
 const verifyToken = (req, res, next) => {
-  try {
-    const token = req.headers["x-access-token"];
+    try {
+        const token = req.headers["x-access-token"];
 
-    if (!token) {
-      throw new Error("No token provided");
+        if (!token) {
+            throw new Error("No token provided");
+        }
+
+        const {userId, isAdmin} = jwt.decode(token, process.env.TOKEN_KEY);
+
+        req.body = {
+            ...req.body, userId, isAdmin,
+        };
+
+        return next();
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
-
-    const { userId, isAdmin } = jwt.decode(token, process.env.TOKEN_KEY);
-
-    req.body = {
-      ...req.body,
-      userId,
-      isAdmin,
-    };
-
-    return next();
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
-  }
 };
 
 /**
@@ -45,18 +43,20 @@ const verifyToken = (req, res, next) => {
  * @param {Function} next The callback to pass control to the next middleware.
  */
 const optionallyVerifyToken = (req, res, next) => {
-  try {
-    const token = req.headers["x-access-token"];
+    try {
+        const token = req.headers["x-access-token"];
 
-    if (!token) return next();
+        if (!token) {
+            return next();
+        }
 
-    const decoded = jwt.decode(token, process.env.TOKEN_KEY);
-    req.body.userId = decoded.userId;
+        const decoded = jwt.decode(token, process.env.TOKEN_KEY);
+        req.body.userId = decoded.userId;
 
-    next();
-  } catch (err) {
-    return next();
-  }
+        next();
+    } catch (err) {
+        return next();
+    }
 };
 
-module.exports = { verifyToken, optionallyVerifyToken };
+module.exports = {verifyToken, optionallyVerifyToken};

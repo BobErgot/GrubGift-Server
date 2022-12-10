@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userControllerActions = require("../controllers/userControllers");
 const loginControllerActions = require("../controllers/loginControllers");
-const { verifyToken: verifyUserToken } = require("../middleware/auth");
+const {verifyToken: verifyUserToken} = require("../middleware/auth");
 
 /**
  * Registers a new user.

@@ -17,12 +17,14 @@ const filter = require("../util/filter");
  *
  * @schema UserSchema
  * @type {mongoose.Schema}
- * @property {String} username - Unique username for the user with character and space restrictions.
+ * @property {String} username - Unique username for the user with character and space
+ *     restrictions.
  * @property {String} email - Unique and valid email address for the user.
  * @property {String} password - Encrypted password for the user's account.
  * @property {String} biography - Optional biography of the user, with a maximum length constraint.
  * @property {Boolean} isAdmin - Flag indicating whether the user has administrative privileges.
- * @property {String} role - The role of the user within the application, with predefined enumeration.
+ * @property {String} role - The role of the user within the application, with predefined
+ *     enumeration.
  */
 const UserSchema = new mongoose.Schema(
     {

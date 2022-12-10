@@ -11,10 +11,7 @@ const jwt = require("jsonwebtoken");
  */
 const getUserDict = (token, user) => {
     return {
-        token,
-        username: user.username,
-        userId: user._id,
-        isAdmin: user.isAdmin,
+        token, username: user.username, userId: user._id, isAdmin: user.isAdmin,
     };
 };
 
@@ -26,8 +23,7 @@ const getUserDict = (token, user) => {
  */
 const buildToken = (user) => {
     return {
-        userId: user._id,
-        isAdmin: user.isAdmin,
+        userId: user._id, isAdmin: user.isAdmin,
     };
 };
 
@@ -41,7 +37,7 @@ const buildToken = (user) => {
  */
 const register = async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const {username, email, password, role} = req.body;
 
         if (username && email && password) {
             const convertedEmail = email.toLowerCase();
@@ -69,9 +65,8 @@ const register = async (req, res) => {
         } else {
             throw new Error("Insufficient information to register");
         }
-    }
-    catch (err) {
-        return res.status(400).json({ error: err.message });
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
 };
 
@@ -85,7 +80,7 @@ const register = async (req, res) => {
  */
 const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const {email, password} = req.body;
 
         if (email && password) {
             const convertedEmail = email.toLowerCase();
@@ -104,13 +99,11 @@ const login = async (req, res) => {
         } else {
             throw new Error("Insufficient information to login");
         }
-    }
-    catch (err) {
-        return res.status(400).json({ error: err.message });
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
 };
 
 module.exports = {
-    register,
-    login,
+    register, login,
 };

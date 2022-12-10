@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const messageControllerActions = require("../controllers/messageController");
-const { verifyToken: verifyUserToken } = require("../middleware/auth");
+const {verifyToken: verifyUserToken} = require("../middleware/auth");
 
 /**
  * Retrieves all chat conversations for the authenticated user.

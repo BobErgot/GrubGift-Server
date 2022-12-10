@@ -12,7 +12,7 @@ const paginate = require("../util/paginate");
  */
 const likePost = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const {userId} = req.body;
 
         const postId = req.params.id;
         const post = await Post.findById(postId);
@@ -21,8 +21,7 @@ const likePost = async (req, res) => {
             const isPostAlreadyLiked = await PostLike.findOne({postId, userId});
             if (!isPostAlreadyLiked) {
                 await PostLike.create({
-                                          postId,
-                                          userId,
+                                          postId, userId,
                                       });
                 post.likeCount = (await PostLike.find({postId})).length;
                 await post.save();
@@ -33,9 +32,8 @@ const likePost = async (req, res) => {
         } else {
             throw new Error("Post does not exist");
         }
-    }
-    catch (err) {
-        return res.status(400).json({ error: err.message });
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
 };
 
@@ -49,7 +47,7 @@ const likePost = async (req, res) => {
  */
 const unlikePost = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const {userId} = req.body;
 
         const postId = req.params.id;
         const post = await Post.findById(postId);
@@ -67,9 +65,8 @@ const unlikePost = async (req, res) => {
         } else {
             throw new Error("Post does not exist");
         }
-    }
-    catch (err) {
-        return res.status(400).json({ error: err.message });
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
 };
 
@@ -82,8 +79,8 @@ const unlikePost = async (req, res) => {
  */
 const markAsLiked = async (posts, userId) => {
     let findId = {};
-    if (userId){
-        findId = { userId };
+    if (userId) {
+        findId = {userId};
     }
 
     const userPostLikes = await PostLike.find(findId); //userId needed
@@ -92,7 +89,7 @@ const markAsLiked = async (posts, userId) => {
         userPostLikes.forEach((userPostLike) => {
             if (userPostLike.postId.equals(post._id)) {
                 post.liked = true;
-                return;
+
             }
         });
     });
@@ -108,16 +105,20 @@ const markAsLiked = async (posts, userId) => {
  */
 const getUserLikedPosts = async (req, res) => {
     try {
-        let { page, sortBy } = req.query;
-        if (!sortBy) sortBy = "-createdAt";
-        if (!page) page = 1;
+        let {page, sortBy} = req.query;
+        if (!sortBy) {
+            sortBy = "-createdAt";
+        }
+        if (!page) {
+            page = 1;
+        }
 
-        const { userId } = req.body;
+        const {userId} = req.body;
         const likerId = req.params.id;
 
-        let posts = await PostLike.find({ userId: likerId })
+        let posts = await PostLike.find({userId: likerId})
             .sort(sortBy)
-            .populate({ path: "postId", populate: { path: "poster" } })
+            .populate({path: "postId", populate: {path: "poster"}})
             .lean();
 
         posts = paginate(posts, 10, page);
@@ -131,17 +132,13 @@ const getUserLikedPosts = async (req, res) => {
             await markAsLiked(responsePosts, userId);
         }
 
-        return res.json({ data: responsePosts, numberOfPosts });
+        return res.json({data: responsePosts, numberOfPosts});
 
-    }
-    catch (err) {
-        return res.status(400).json({ error: err.message });
+    } catch (err) {
+        return res.status(400).json({error: err.message});
     }
 };
 
 module.exports = {
-    markAsLiked,
-    likePost,
-    unlikePost,
-    getUserLikedPosts,
+    markAsLiked, likePost, unlikePost, getUserLikedPosts,
 };

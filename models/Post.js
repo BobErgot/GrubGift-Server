@@ -5,13 +5,13 @@ const PostLike = require("./PostLike");
 /**
  * Schema definition for a post within the application.
  *
- * The Post schema includes fields for the poster (referencing a user), title and content of the post,
- * like count, comment count, and flags for editing and promoting the post. It enforces maximum length
- * constraints on both the title and content to ensure data consistency. Additionally, it includes
- * timestamps for tracking the creation and last update of each post.
+ * The Post schema includes fields for the poster (referencing a user), title and content of the
+ * post, like count, comment count, and flags for editing and promoting the post. It enforces
+ * maximum length constraints on both the title and content to ensure data consistency.
+ * Additionally, it includes timestamps for tracking the creation and last update of each post.
  *
- * Before saving, the title and content are cleaned to remove any inappropriate language. Upon deletion
- * of a post, all associated likes are also removed through a pre-remove hook.
+ * Before saving, the title and content are cleaned to remove any inappropriate language. Upon
+ * deletion of a post, all associated likes are also removed through a pre-remove hook.
  *
  * @schema PostSchema
  * @type {mongoose.Schema}
@@ -81,7 +81,7 @@ PostSchema.pre("save", function (next) {
  * consistency across the application.
  */
 PostSchema.pre("remove", async function (next) {
-    await PostLike.deleteMany({ postId: this._id });
+    await PostLike.deleteMany({postId: this._id});
     next();
 });
 

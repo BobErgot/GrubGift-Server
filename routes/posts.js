@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const postControllerActions = require("../controllers/postControllers");
 const likeControllerActions = require("../controllers/likeControllers");
-const { verifyToken: verifyUserToken, optionallyVerifyToken: optionallyVerifyUserToken } = require("../middleware/auth");
+const {verifyToken: verifyUserToken, optionallyVerifyToken: optionallyVerifyUserToken} = require(
+    "../middleware/auth");
 
 /**
  * Retrieves all posts, with optional user authentication to customize the response.
@@ -25,7 +26,8 @@ router.get("/", optionallyVerifyUserToken, postControllerActions.getMultiplePost
 router.post("/", verifyUserToken, postControllerActions.createPost);
 
 /**
- * Retrieves a specific post by its ID, with optional user authentication to provide additional details.
+ * Retrieves a specific post by its ID, with optional user authentication to provide additional
+ * details.
  *
  * @route GET /:id
  * @access Public (with optional authentication)

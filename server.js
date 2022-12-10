@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const app = express();
-const { authSocket, socketServer } = require("./socketServer");
+const {authSocket, socketServer} = require("./socketServer");
 const posts = require("./routes/posts");
 const users = require("./routes/users");
 const comments = require("./routes/comments");
@@ -23,13 +23,9 @@ io.use(authSocket);
 io.on("connection", (socket) => socketServer(socket));
 
 mongoose.set('strictQuery', false);
-mongoose.connect(
-    process.env.MONGO_URI,
-    { useNewUrlParser: true, useUnifiedTopology: true },
-    () => {
-        console.log("MongoDB connected");
-    }
-);
+mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true}, () => {
+    console.log("MongoDB connected");
+});
 
 httpServer.listen(process.env.PORT || 4000, () => {
     console.log("Listening");

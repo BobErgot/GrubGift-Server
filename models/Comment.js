@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Post = require("./Post");
 const filter = require("../util/filter");
 
-
 /**
  * Schema definition for a comment within the application.
  *
@@ -62,7 +61,7 @@ const CommentSchema = new mongoose.Schema(
  * If a comment is removed, all child comments are also recursively removed.
  */
 CommentSchema.post("remove", async function (res, next) {
-    const comments = await this.model("comment").find({ parent: this._id });
+    const comments = await this.model("comment").find({parent: this._id});
 
     for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
